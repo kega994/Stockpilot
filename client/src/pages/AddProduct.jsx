@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { createProduct } from "../services/productService";
+import { getBrands } from "../services/brandService";
+import { getCategories } from "../services/categoryService";
 
 function AddProduct() {
   const navigate = useNavigate();
@@ -24,22 +27,9 @@ function AddProduct() {
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        const response = await fetch(
-          "http://localhost:3000/api/brands",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch brands");
-        }
-
-        const data = await response.json();
+        
+        const data = await getBrands();
+        console.log("Brands returned:", data);
         setBrands(data);
       } catch (error) {
         console.error("Error fetching brands:", error);
@@ -48,22 +38,8 @@ function AddProduct() {
 
     const fetchCategories = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        const response = await fetch(
-          "http://localhost:3000/api/categories",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch categories");
-        }
-
-        const data = await response.json();
+        
+        const data = await getCategories();
         setCategories(data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -81,36 +57,19 @@ function AddProduct() {
     // Clear previous error
     setError("");
 
+    const product = {
+    name,
+    description,
+    sku,
+    price,
+    quantity,
+    brand_id: brand,
+    category_id: category,
+    };
+
     try {
-      const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        "http://localhost:3000/api/products",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name,
-            description,
-            sku,
-            price,
-            quantity,
-            brand_id: brand,
-            category_id: category,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      // Product already exists or another backend error
-      if (!response.ok) {
-        setError(data.error || "Failed to create product");
-        return;
-      }
+      const data = await createProduct(product);
 
       // Successful creation
       console.log("Product created:", data);

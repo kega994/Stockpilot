@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import {getBrands} from "../services/brandService";
+import {getCategories} from "../services/categoryService";
+import { getProductById, updateProduct } from "../services/productService";
+
 
 function EditProduct() {
   const { id } = useParams();
@@ -19,27 +23,11 @@ function EditProduct() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // Get existing product + brands + categories
+  // Get existing product by id + brands + categories
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem("token");
-
-        // Get product
-        const productResponse = await fetch(
-          `http://localhost:3000/api/products/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!productResponse.ok) {
-          throw new Error("Failed to fetch product");
-        }
-
-        const product = await productResponse.json();
+        const product = await getProductById(id);
 
         setName(product.name);
         setDescription(product.description || "");
@@ -50,37 +38,11 @@ function EditProduct() {
         setCategory(product.category_id);
 
         // Get brands
-        const brandsResponse = await fetch(
-          "http://localhost:3000/api/brands",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!brandsResponse.ok) {
-          throw new Error("Failed to fetch brands");
-        }
-
-        const brandsData = await brandsResponse.json();
+        const brandsData = await getBrands();
         setBrands(brandsData);
 
         // Get categories
-        const categoriesResponse = await fetch(
-          "http://localhost:3000/api/categories",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!categoriesResponse.ok) {
-          throw new Error("Failed to fetch categories");
-        }
-
-        const categoriesData = await categoriesResponse.json();
+        const categoriesData = await getCategories();
         setCategories(categoriesData);
 
       } catch (error) {
@@ -100,43 +62,24 @@ function EditProduct() {
 
     setError("");
 
+    const product = {
+    name,
+    description,
+    sku,
+    price,
+    quantity,
+    brand_id: brand,
+    category_id: category,
+    };
+
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await fetch(
-        `http://localhost:3000/api/products/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            name,
-            description,
-            sku,
-            price,
-            quantity,
-            brand_id: brand,
-            category_id: category,
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || "Failed to update product");
-        return;
-      }
-
-      console.log("Product updated:", data);
+      await updateProduct(id, product);
 
       navigate("/products");
 
     } catch (error) {
       console.error("Error updating product:", error);
-      setError("Something went wrong. Please try again.");
+      setError(error.message || "Something went wrong. Please try again.");
     }
   };
 
