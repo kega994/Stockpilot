@@ -110,6 +110,9 @@ function Products() {
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
+    if (currentPage < 1 && totalPages > 0) {
+      setCurrentPage(1);
+    }     
   }, [totalPages]);
 
   // Loading page while products are being fetched
@@ -230,7 +233,7 @@ function Products() {
           {currentProducts.map((product) => (
             <tr key={product.id}>
               <td>{product.sku}</td>
-              <td>{product.name}</td>
+              <td><button onClick={() => navigate(`/products/${product.id}`)}>{product.name}</button></td>
               <td>{product.brand}</td>
               <td>{product.category}</td>
               <td>${product.price}</td>
