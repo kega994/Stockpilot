@@ -15,6 +15,7 @@ function AddProduct() {
   const [quantity, setQuantity] = useState("");
   const [brand, setBrand] = useState("");
   const [category, setCategory] = useState("");
+  const [image, setImage] = useState(null);
 
   // Dropdown data
   const [brands, setBrands] = useState([]);
@@ -91,6 +92,8 @@ function AddProduct() {
       setError("Something went wrong. Please try again.");
     }
   };
+
+console.log(image);
 
   return (
     <div>
@@ -182,6 +185,15 @@ function AddProduct() {
             </option>
           ))}
         </select>
+
+        <label>
+            Product Image
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
+          />
+        </label>
 
         {/* Submit */}
         <button type="submit">
