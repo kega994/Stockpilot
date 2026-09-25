@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { createProduct } from "../services/productService";
 import { getBrands } from "../services/brandService";
@@ -58,31 +58,43 @@ function AddProduct() {
     // Clear previous error
     setError("");
 
-    const product = {
-    name,
-    description,
-    sku,
-    price,
-    quantity,
-    brand_id: brand,
-    category_id: category,
-    };
+  if (
+  !name ||
+  !sku ||
+  !price ||
+  !quantity ||
+  !brand ||
+  !category ||
+  !image
+) {
+  setError("Please fill in all required fields.");
+  return;
+}
 
-    try {
+  const formData = new FormData();
 
-      const data = await createProduct(product);
+  formData.append("name", name);
+  formData.append("description", description);
+  formData.append("sku", sku);
+  formData.append("price", price);
+  formData.append("quantity", quantity);
+  formData.append("brand_id", brand);
+  formData.append("category_id", category);
+  formData.append("image", image);
 
-      // Successful creation
-      console.log("Product created:", data);
+  try {
+    const data = await createProduct(formData);
 
-      // Reset form
-      setName("");
-      setDescription("");
-      setSku("");
-      setPrice("");
-      setQuantity("");
-      setBrand("");
-      setCategory("");
+    console.log("Product created:", data);
+
+    setName("");
+    setDescription("");
+    setSku("");
+    setPrice("");
+    setQuantity("");
+    setBrand("");
+    setCategory("");
+    setImage(null);
 
       // Go back to products
       navigate("/products");
@@ -91,9 +103,10 @@ function AddProduct() {
       console.error("Error creating product:", error);
       setError("Something went wrong. Please try again.");
     }
+    console.log(formData.get("name"), formData.get("sku"), formData.get("price"), formData.get("quantity"), formData.get("brand_id"), formData.get("category_id"), formData.get("image"));
   };
 
-console.log(image);
+
 
   return (
     <div>

@@ -56,36 +56,34 @@ const deleteProduct = async (id) => {
 
 
   //Create product
-  const createProduct = async (product) =>{
-        try {
-      const token = localStorage.getItem("token");
+  const createProduct = async (product) => {
+  try {
+    const token = localStorage.getItem("token");
 
-      const response = await fetch(
-        "http://localhost:3000/api/products",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(product),
-        }
-      );
-
-      const data = await response.json();
-
-      // Product already exists or another backend error
-      if (!response.ok) {
-        throw new Error(data.error )
+    const response = await fetch(
+      "http://localhost:3000/api/products",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: product,
       }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to create product");
+    }
 
     return data;
 
-    } catch (error) {
-      throw error;
-    }
-  };
-
+  } catch (error) {
+    console.error("Error creating product:", error);
+    throw error;
+  }
+};
 
   const getProductById = async (id) => {
     try {

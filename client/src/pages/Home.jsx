@@ -37,6 +37,7 @@ console.log(products);
   {products.map((product) => (
     <div key={product.id}>
       <h2>{product.name}</h2>
+      <img src={product.image} alt={product.name} />
       <p>${product.price}</p>
       <button onClick={() => addToBasket(product)}>
         Add to Basket
