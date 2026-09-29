@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProducts, deleteProduct } from "../services/productService";
+import {
+  getProducts,
+  deleteProduct,
+} from "../services/productService";
 import { getCategories } from "../services/categoryService";
 import { getBrands } from "../services/brandService";
+import "../styles/Products.css";
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -30,7 +34,9 @@ function Products() {
         setProducts(data);
       } catch (error) {
         console.error("Error loading products:", error);
-        setError("Failed to fetch products. Please try again later.");
+        setError(
+          "Failed to fetch products. Please try again later."
+        );
       } finally {
         setLoading(false);
       }
@@ -47,7 +53,9 @@ function Products() {
         setBrands(data);
       } catch (error) {
         console.error("Error loading brands:", error);
-        setError("Failed to fetch brands. Please try again later.");
+        setError(
+          "Failed to fetch brands. Please try again later."
+        );
       }
     };
 
@@ -62,7 +70,9 @@ function Products() {
         setCategories(data);
       } catch (error) {
         console.error("Error loading categories:", error);
-        setError("Failed to fetch categories. Please try again later.");
+        setError(
+          "Failed to fetch categories. Please try again later."
+        );
       }
     };
 
@@ -81,20 +91,30 @@ function Products() {
     const search = searchQuery.toLowerCase();
 
     const matchesSearch =
-      name.includes(search) || sku.includes(search);
+      name.includes(search) ||
+      sku.includes(search);
 
     const matchesCategory =
-      categoryFilter === "" || product.category === categoryFilter;
+      categoryFilter === "" ||
+      product.category === categoryFilter;
 
     const matchesBrand =
-      brandFilter === "" || product.brand === brandFilter;
+      brandFilter === "" ||
+      product.brand === brandFilter;
 
-    return matchesSearch && matchesCategory && matchesBrand;
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesBrand
+    );
   });
 
   // Pagination
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const indexOfLastProduct =
+    currentPage * productsPerPage;
+
+  const indexOfFirstProduct =
+    indexOfLastProduct - productsPerPage;
 
   const currentProducts = filteredProducts.slice(
     indexOfFirstProduct,
@@ -105,24 +125,21 @@ function Products() {
     filteredProducts.length / productsPerPage
   );
 
-  // Keep current page valid after products are deleted
+  // Keep current page valid
   useEffect(() => {
+    if (totalPages === 0) {
+      setCurrentPage(1);
+      return;
+    }
+
     if (currentPage > totalPages) {
       setCurrentPage(totalPages);
     }
-    if (currentPage < 1 && totalPages > 0) {
+
+    if (currentPage < 1) {
       setCurrentPage(1);
-    }     
-  }, [totalPages]);
-
-  // Loading page while products are being fetched
-  if (loading) {
-    return <div>Loading products...</div>;
-  }
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+    }
+  }, [totalPages, currentPage]);
 
   // Delete product
   const deleteAProduct = async (id) => {
@@ -142,11 +159,19 @@ function Products() {
       await deleteProduct(id);
 
       setProducts((currentProducts) =>
-        currentProducts.filter((product) => product.id !== id)
+        currentProducts.filter(
+          (product) => product.id !== id
+        )
       );
     } catch (error) {
-      console.error("Error deleting product:", error);
-      setDeleteError("Failed to delete product. Please try again later.");
+      console.error(
+        "Error deleting product:",
+        error
+      );
+
+      setDeleteError(
+        "Failed to delete product. Please try again later."
+      );
     } finally {
       setDeletingId(null);
     }
@@ -155,11 +180,12 @@ function Products() {
   // Search products
   const handleSearch = (e) => {
     e.preventDefault();
+
     setDeleteError(null);
     setSearchQuery(searchTerm);
   };
 
-  // Clear search
+  // Clear filters
   const clearSearch = () => {
     setSearchTerm("");
     setSearchQuery("");
@@ -169,125 +195,367 @@ function Products() {
     setDeleteError(null);
   };
 
+  // Loading
+  if (loading) {
+    return (
+      <div className="products-page">
+        <div className="products-loading">
+          Loading products...
+        </div>
+      </div>
+    );
+  }
+
+  // Error
+  if (error) {
+    return (
+      <div className="products-page">
+        <div className="products-error">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <>
-      {deleteError && <div>{deleteError}</div>}
+    <div className="products-page">
 
-      <form onSubmit={handleSearch}>
-        <input
-          placeholder="Search products..."
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      {/* Page header */}
 
-        <button type="submit">Search</button>
-      </form>
+      <div className="products-header">
 
-      <button onClick={clearSearch}>Clear</button>
+        <div>
+          <p className="products-label">
+            INVENTORY MANAGEMENT
+          </p>
 
-      <select
-        value={categoryFilter}
-        onChange={(e) => setCategoryFilter(e.target.value)}
-      >
-        <option value="">All Categories</option>
+          <h1>Products</h1>
 
-        {categories.map((category) => (
-          <option key={category.id} value={category.name}>
-            {category.name}
+          <p className="products-description">
+            Manage your StockPilot inventory.
+          </p>
+        </div>
+
+        <div className="products-header-actions">
+
+          {/* Home button */}
+
+          <button
+            className="home-button"
+            onClick={() => navigate("/")}
+          >
+            ← Home
+          </button>
+
+          {/* Add product button */}
+
+          <button
+            className="add-product-button"
+            onClick={() =>
+              navigate("/products/add")
+            }
+          >
+            + Add Product
+          </button>
+
+        </div>
+
+      </div>
+
+      {/* Delete error */}
+
+      {deleteError && (
+        <div className="delete-error">
+          {deleteError}
+        </div>
+      )}
+
+      {/* Filters */}
+
+      <div className="products-controls">
+
+        <form
+          className="product-search"
+          onSubmit={handleSearch}
+        >
+          <input
+            placeholder="Search by product name or SKU..."
+            type="text"
+            value={searchTerm}
+            onChange={(e) =>
+              setSearchTerm(e.target.value)
+            }
+          />
+
+          <button type="submit">
+            Search
+          </button>
+        </form>
+
+        {/* Category filter */}
+
+        <select
+          value={categoryFilter}
+          onChange={(e) =>
+            setCategoryFilter(e.target.value)
+          }
+        >
+          <option value="">
+            All Categories
           </option>
-        ))}
-      </select>
 
-      <select
-        value={brandFilter}
-        onChange={(e) => setBrandFilter(e.target.value)}
-      >
-        <option value="">All Brands</option>
-
-        {brands.map((brand) => (
-          <option key={brand.id} value={brand.name}>
-            {brand.name}
-          </option>
-        ))}
-      </select>
-
-      <button onClick={() => navigate("/products/add")}>
-        Add Product
-      </button>
-
-      <table>
-        <thead>
-          <tr>
-            <th>SKU</th>
-            <th>Name</th>
-            <th>Brand</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {currentProducts.map((product) => (
-            <tr key={product.id}>
-              <td>{product.sku}</td>
-              <td><button onClick={() => navigate(`/products/${product.id}`)}>{product.name}</button></td>
-              <td>{product.brand}</td>
-              <td>{product.category}</td>
-              <td>${product.price}</td>
-              <td>{product.quantity}</td>
-
-              <td>
-                <button
-                  onClick={() =>
-                    navigate(`/products/edit/${product.id}`)
-                  }
-                >
-                  Edit
-                </button>
-
-                <button
-                  onClick={() => deleteAProduct(product.id)}
-                  disabled={deletingId !== null}
-                >
-                  {deletingId === product.id ? "Deleting..." : "Delete"}
-                </button>
-              </td>
-            </tr>
+          {categories.map((category) => (
+            <option
+              key={category.id}
+              value={category.name}
+            >
+              {category.name}
+            </option>
           ))}
+        </select>
 
-          {products.length === 0 ? (
+        {/* Brand filter */}
+
+        <select
+          value={brandFilter}
+          onChange={(e) =>
+            setBrandFilter(e.target.value)
+          }
+        >
+          <option value="">
+            All Brands
+          </option>
+
+          {brands.map((brand) => (
+            <option
+              key={brand.id}
+              value={brand.name}
+            >
+              {brand.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Clear filters */}
+
+        <button
+          className="clear-button"
+          onClick={clearSearch}
+        >
+          Clear
+        </button>
+
+      </div>
+
+      {/* Results information */}
+
+      <div className="products-results">
+
+        <span>
+          Showing{" "}
+          <strong>
+            {filteredProducts.length}
+          </strong>{" "}
+          products
+        </span>
+
+        {(searchQuery ||
+          categoryFilter ||
+          brandFilter) && (
+          <span className="filter-active">
+            Filters active
+          </span>
+        )}
+
+      </div>
+
+      {/* Product table */}
+
+      <div className="products-table-container">
+
+        <table className="products-table">
+
+          <thead>
             <tr>
-              <td colSpan="7">No products available.</td>
+              <th>SKU</th>
+              <th>Product</th>
+              <th>Brand</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Actions</th>
             </tr>
-          ) : filteredProducts.length === 0 ? (
-            <tr>
-              <td colSpan="7">No results found.</td>
-            </tr>
-          ) : null}
-        </tbody>
-      </table>
+          </thead>
 
-      <button
-        onClick={() => setCurrentPage(currentPage - 1)}
-        disabled={currentPage === 1}
-      >
-        Previous
-      </button>
+          <tbody>
 
-      <p>
-        Page {currentPage} of {totalPages}
-      </p>
+            {currentProducts.map((product) => (
 
-      <button
-        onClick={() => setCurrentPage(currentPage + 1)}
-        disabled={currentPage === totalPages}
-      >
-        Next
-      </button>
-    </>
+              <tr key={product.id}>
+
+                <td>
+                  <span className="sku">
+                    {product.sku}
+                  </span>
+                </td>
+
+                <td>
+                  <button
+                    className="product-name-button"
+                    onClick={() =>
+                      navigate(
+                        `/products/${product.id}`
+                      )
+                    }
+                  >
+                    {product.name}
+                  </button>
+                </td>
+
+                <td>
+                  {product.brand}
+                </td>
+
+                <td>
+                  <span className="category-badge">
+                    {product.category}
+                  </span>
+                </td>
+
+                <td className="price">
+                  ${Number(product.price).toFixed(2)}
+                </td>
+
+                <td>
+                  <span
+                    className={
+                      product.quantity === 0
+                        ? "stock stock-out"
+                        : product.quantity <= 5
+                        ? "stock stock-low"
+                        : "stock stock-good"
+                    }
+                  >
+                    {product.quantity}
+                  </span>
+                </td>
+
+                <td>
+                  <div className="action-buttons">
+
+                    {/* Edit */}
+
+                    <button
+                      className="edit-button"
+                      onClick={() =>
+                        navigate(
+                          `/products/edit/${product.id}`
+                        )
+                      }
+                    >
+                      Edit
+                    </button>
+
+                    {/* Delete */}
+
+                    <button
+                      className="delete-button"
+                      onClick={() =>
+                        deleteAProduct(product.id)
+                      }
+                      disabled={
+                        deletingId !== null
+                      }
+                    >
+                      {deletingId === product.id
+                        ? "Deleting..."
+                        : "Delete"}
+                    </button>
+
+                  </div>
+                </td>
+
+              </tr>
+
+            ))}
+
+            {/* No products */}
+
+            {products.length === 0 && (
+              <tr>
+                <td
+                  colSpan="7"
+                  className="empty-table"
+                >
+                  No products available.
+                </td>
+              </tr>
+            )}
+
+            {/* No search results */}
+
+            {products.length > 0 &&
+              filteredProducts.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="7"
+                    className="empty-table"
+                  >
+                    No products match your search.
+                  </td>
+                </tr>
+              )}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      {/* Pagination */}
+
+      {totalPages > 0 && (
+        <div className="pagination">
+
+          <button
+            onClick={() =>
+              setCurrentPage(
+                currentPage - 1
+              )
+            }
+            disabled={currentPage === 1}
+          >
+            ← Previous
+          </button>
+
+          <span>
+            Page{" "}
+            <strong>
+              {currentPage}
+            </strong>{" "}
+            of{" "}
+            <strong>
+              {totalPages}
+            </strong>
+          </span>
+
+          <button
+            onClick={() =>
+              setCurrentPage(
+                currentPage + 1
+              )
+            }
+            disabled={
+              currentPage === totalPages
+            }
+          >
+            Next →
+          </button>
+
+        </div>
+      )}
+
+    </div>
   );
 }
 

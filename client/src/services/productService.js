@@ -118,10 +118,9 @@ const updateProduct = async (id, product) => {
       {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(product),
+        body: product,
       }
     );
 
@@ -132,6 +131,7 @@ const updateProduct = async (id, product) => {
     }
 
     return data;
+
   } catch (error) {
     console.error("Error updating product:", error);
     throw error;

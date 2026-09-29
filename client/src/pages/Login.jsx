@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import "../styles/Login.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -40,27 +40,77 @@ function Login() {
   };
 
   return (
-    <>
-      <h1>Login Page</h1>
+    <div className="login-page">
+      <div className="login-card">
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          value={email}
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div
+          className="login-logo"
+          onClick={() => navigate("/")}
+        >
+          Stock<span>pilot</span>
+        </div>
 
-        <input
-          type="password"
-          value={password}
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="login-header">
+          <p className="login-label">ADMIN PORTAL</p>
 
-        <button type="submit">Login</button>
-      </form>
-    </>
+          <h1>Welcome back</h1>
+
+          <p className="login-description">
+            Sign in to manage your products and inventory.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="login-form">
+
+          <div className="form-group">
+            <label htmlFor="email">
+              Email address
+            </label>
+
+            <input
+              id="email"
+              type="email"
+              value={email}
+              placeholder="Enter your email"
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">
+              Password
+            </label>
+
+            <input
+              id="password"
+              type="password"
+              value={password}
+              placeholder="Enter your password"
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="login-button"
+          >
+            Sign In
+          </button>
+
+        </form>
+
+        <button
+          type="button"
+          className="back-home-button"
+          onClick={() => navigate("/")}
+        >
+          ← Back to store
+        </button>
+
+      </div>
+    </div>
   );
 }
 
