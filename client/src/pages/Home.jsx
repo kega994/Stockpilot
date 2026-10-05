@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getProducts } from "../services/productService";
 import BasketContext from "../context/BasketContext";
 import Header from "../components/Header";
@@ -7,7 +7,12 @@ import "../styles/Home.css";
 
 function Home() {
   const { addToBasket } = useContext(BasketContext);
+
   const navigate = useNavigate();
+
+  const [searchParams] = useSearchParams();
+
+  const searchTerm = searchParams.get("search") || "";
 
   const [products, setProducts] = useState([]);
 
@@ -15,6 +20,7 @@ function Home() {
     const loadProducts = async () => {
       try {
         const data = await getProducts();
+
         setProducts(data);
       } catch (error) {
         console.error("Error loading products:", error);
@@ -27,6 +33,26 @@ function Home() {
   const handleProductClick = (id) => {
     navigate(`/products/${id}`);
   };
+
+  const filteredProducts = products.filter((product) => {
+    if (!searchTerm) {
+      return true;
+    }
+
+    const search = searchTerm.toLowerCase();
+
+    const name = product.name?.toLowerCase() || "";
+    const sku = product.sku?.toLowerCase() || "";
+    const brand = product.brand?.toLowerCase() || "";
+    const category = product.category?.toLowerCase() || "";
+
+    return (
+      name.includes(search) ||
+      sku.includes(search) ||
+      brand.includes(search) ||
+      category.includes(search)
+    );
+  });
 
   return (
     <div className="home">
@@ -80,11 +106,15 @@ function Home() {
           <div>
 
             <p className="section-label">
-              FEATURED PRODUCTS
+              {searchTerm
+                ? "SEARCH RESULTS"
+                : "FEATURED PRODUCTS"}
             </p>
 
             <h2>
-              Latest Technology
+              {searchTerm
+                ? `Results for "${searchTerm}"`
+                : "Latest Technology"}
             </h2>
 
           </div>
@@ -93,7 +123,7 @@ function Home() {
 
         <div className="product-grid">
 
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
 
             <div
               className="product-card"
@@ -106,7 +136,6 @@ function Home() {
               {/* Product image */}
 
               <div className="product-image-container">
-
 
                 {product.image ? (
                   <img
@@ -171,6 +200,32 @@ function Home() {
           ))}
 
         </div>
+
+        {/* No search results */}
+
+        {searchTerm &&
+          filteredProducts.length === 0 && (
+
+            <div className="no-search-results">
+
+              <h3>
+                No products found
+              </h3>
+
+              <p>
+                We couldn't find any products matching
+                "{searchTerm}".
+              </p>
+
+              <button
+                onClick={() => navigate("/")}
+              >
+                View All Products
+              </button>
+
+            </div>
+
+          )}
 
       </main>
 

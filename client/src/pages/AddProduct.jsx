@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { createProduct } from "../services/productService";
 import { getBrands } from "../services/brandService";
 import { getCategories } from "../services/categoryService";
+import "../styles/AddProduct.css";
 
 function AddProduct() {
   const navigate = useNavigate();
 
-  // Form state
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [sku, setSku] = useState("");
@@ -17,20 +17,15 @@ function AddProduct() {
   const [category, setCategory] = useState("");
   const [image, setImage] = useState(null);
 
-  // Dropdown data
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
 
-  // Error message
   const [error, setError] = useState("");
 
-  // Fetch brands and categories
   useEffect(() => {
     const fetchBrands = async () => {
       try {
-        
         const data = await getBrands();
-        console.log("Brands returned:", data);
         setBrands(data);
       } catch (error) {
         console.error("Error fetching brands:", error);
@@ -39,7 +34,6 @@ function AddProduct() {
 
     const fetchCategories = async () => {
       try {
-        
         const data = await getCategories();
         setCategories(data);
       } catch (error) {
@@ -51,169 +45,265 @@ function AddProduct() {
     fetchCategories();
   }, []);
 
-  // Submit product
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Clear previous error
     setError("");
 
-  if (
-  !name ||
-  !sku ||
-  !price ||
-  !quantity ||
-  !brand ||
-  !category ||
-  !image
-) {
-  setError("Please fill in all required fields.");
-  return;
-}
+    if (
+      !name ||
+      !sku ||
+      !price ||
+      !quantity ||
+      !brand ||
+      !category ||
+      !image
+    ) {
+      setError("Please fill in all required fields.");
+      return;
+    }
 
-  const formData = new FormData();
+    const formData = new FormData();
 
-  formData.append("name", name);
-  formData.append("description", description);
-  formData.append("sku", sku);
-  formData.append("price", price);
-  formData.append("quantity", quantity);
-  formData.append("brand_id", brand);
-  formData.append("category_id", category);
-  formData.append("image", image);
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("sku", sku);
+    formData.append("price", price);
+    formData.append("quantity", quantity);
+    formData.append("brand_id", brand);
+    formData.append("category_id", category);
+    formData.append("image", image);
 
-  try {
-    const data = await createProduct(formData);
+    try {
+      await createProduct(formData);
 
-    console.log("Product created:", data);
+      setName("");
+      setDescription("");
+      setSku("");
+      setPrice("");
+      setQuantity("");
+      setBrand("");
+      setCategory("");
+      setImage(null);
 
-    setName("");
-    setDescription("");
-    setSku("");
-    setPrice("");
-    setQuantity("");
-    setBrand("");
-    setCategory("");
-    setImage(null);
-
-      // Go back to products
       navigate("/products");
-
     } catch (error) {
       console.error("Error creating product:", error);
       setError("Something went wrong. Please try again.");
     }
-    console.log(formData.get("name"), formData.get("sku"), formData.get("price"), formData.get("quantity"), formData.get("brand_id"), formData.get("category_id"), formData.get("image"));
   };
 
-
-
   return (
-    <div>
-      <h1>Add Product</h1>
+    <div className="add-product-page">
+      <div className="add-product-container">
 
-      {error && (
-        <p>
-          {error}
-        </p>
-      )}
+        <div className="add-product-header">
+          <div>
+            <p className="add-product-label">INVENTORY MANAGEMENT</p>
 
-      <form onSubmit={handleSubmit}>
+            <h1>Add Product</h1>
 
-        {/* Product name */}
-        <input
-          type="text"
-          placeholder="Product name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+            <p>
+              Add a new product to your StockPilot inventory.
+            </p>
+          </div>
 
-        {/* Description */}
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+          <button
+            type="button"
+            className="back-button"
+            onClick={() => navigate("/products")}
+          >
+            ← Back to Products
+          </button>
+        </div>
 
-        {/* SKU */}
-        <input
-          type="text"
-          placeholder="SKU"
-          value={sku}
-          onChange={(e) => setSku(e.target.value)}
-        />
+        <div className="add-product-card">
 
-        {/* Price */}
-        <input
-          type="number"
-          step="0.01"
-          placeholder="Price"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
+          {error && (
+            <div className="add-product-error">
+              {error}
+            </div>
+          )}
 
-        {/* Quantity */}
-        <input
-          type="number"
-          min="0"
-          placeholder="Quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-        />
+          <form onSubmit={handleSubmit}>
 
-        {/* Brand */}
-        <select
-          value={brand}
-          onChange={(e) => setBrand(e.target.value)}
-        >
-          <option value="">
-            Select a brand
-          </option>
+            <div className="form-section">
+              <h2>Product Information</h2>
 
-          {brands.map((brand) => (
-            <option
-              key={brand.id}
-              value={brand.id}
-            >
-              {brand.name}
-            </option>
-          ))}
-        </select>
+              <p>
+                Enter the basic details for your product.
+              </p>
 
-        {/* Category */}
-        <select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="">
-            Select a category
-          </option>
+              <div className="form-grid">
 
-          {categories.map((category) => (
-            <option
-              key={category.id}
-              value={category.id}
-            >
-              {category.name}
-            </option>
-          ))}
-        </select>
+                <div className="form-group form-group-full">
+                  <label>Product Name *</label>
 
-        <label>
-            Product Image
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
-          />
-        </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. MacBook Air M3"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
 
-        {/* Submit */}
-        <button type="submit">
-          Add Product
-        </button>
+                <div className="form-group form-group-full">
+                  <label>Description</label>
 
-      </form>
+                  <textarea
+                    placeholder="Enter a description of the product..."
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows="4"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>SKU *</label>
+
+                  <input
+                    type="text"
+                    placeholder="e.g. MAC-M3-001"
+                    value={sku}
+                    onChange={(e) => setSku(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Price *</label>
+
+                  <div className="input-with-prefix">
+                    <span>$</span>
+
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      placeholder="0.00"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group">
+                  <label>Quantity *</label>
+
+                  <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Brand *</label>
+
+                  <select
+                    value={brand}
+                    onChange={(e) => setBrand(e.target.value)}
+                  >
+                    <option value="">
+                      Select a brand
+                    </option>
+
+                    {brands.map((brand) => (
+                      <option
+                        key={brand.id}
+                        value={brand.id}
+                      >
+                        {brand.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="form-group">
+                  <label>Category *</label>
+
+                  <select
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    <option value="">
+                      Select a category
+                    </option>
+
+                    {categories.map((category) => (
+                      <option
+                        key={category.id}
+                        value={category.id}
+                      >
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+              </div>
+            </div>
+
+            <div className="form-section image-section">
+
+              <h2>Product Image</h2>
+
+              <p>
+                Add a product image for the storefront.
+              </p>
+
+              <label className="image-upload">
+
+                <div className="upload-icon">
+                  ↑
+                </div>
+
+                <strong>
+                  {image
+                    ? image.name
+                    : "Choose a product image"}
+                </strong>
+
+                <span>
+                  {image
+                    ? "Image selected successfully"
+                    : "PNG, JPG or WEBP"}
+                </span>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setImage(e.target.files[0])}
+                />
+
+              </label>
+
+            </div>
+
+            <div className="form-actions">
+
+              <button
+                type="button"
+                className="cancel-button"
+                onClick={() => navigate("/products")}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="submit-button"
+              >
+                Add Product
+              </button>
+
+            </div>
+
+          </form>
+        </div>
+
+      </div>
     </div>
   );
 }

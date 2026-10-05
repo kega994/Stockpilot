@@ -2,9 +2,9 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import BasketContext from "../context/BasketContext";
 import Header from "../components/Header";
-import "../styles/Checkoutpage.css";
+import "../styles/BasketPage.css";
 
-function Checkoutpage() {
+function Basketpage() {
   const {
     basket,
     increaseQuantity,
@@ -21,12 +21,17 @@ function Checkoutpage() {
 
   const total = subtotal + delivery;
 
+
+  // Empty basket
+
   if (basket.length === 0) {
     return (
       <div className="checkout-page">
+
         <Header />
 
         <main className="empty-basket">
+
           <div className="empty-basket-icon">
             🛒
           </div>
@@ -35,7 +40,9 @@ function Checkoutpage() {
             YOUR BASKET
           </p>
 
-          <h1>Your basket is empty</h1>
+          <h1>
+            Your basket is empty
+          </h1>
 
           <p>
             You haven't added any products to your basket yet.
@@ -47,13 +54,17 @@ function Checkoutpage() {
           >
             Continue Shopping
           </button>
+
         </main>
+
       </div>
     );
   }
 
+
   return (
     <div className="checkout-page">
+
       <Header />
 
       <main className="checkout-container">
@@ -61,16 +72,21 @@ function Checkoutpage() {
         {/* Page heading */}
 
         <div className="checkout-heading">
+
           <p className="checkout-label">
             YOUR BASKET
           </p>
 
-          <h1>Shopping Basket</h1>
+          <h1>
+            Shopping Basket
+          </h1>
 
           <p>
             Review your products before continuing.
           </p>
+
         </div>
+
 
         <div className="checkout-layout">
 
@@ -79,6 +95,7 @@ function Checkoutpage() {
           <section className="basket-section">
 
             <div className="basket-section-header">
+
               <h2>
                 Your Items
               </h2>
@@ -91,7 +108,9 @@ function Checkoutpage() {
                 )}{" "}
                 items
               </span>
+
             </div>
+
 
             <div className="basket-items">
 
@@ -100,6 +119,7 @@ function Checkoutpage() {
                 const itemTotal =
                   Number(item.price) *
                   item.basketQuantity;
+
 
                 return (
                   <div
@@ -124,6 +144,7 @@ function Checkoutpage() {
 
                     </div>
 
+
                     {/* Product information */}
 
                     <div className="basket-product-info">
@@ -146,11 +167,13 @@ function Checkoutpage() {
 
                     </div>
 
-                    {/* Quantity */}
+
+                    {/* Quantity controls */}
 
                     <div className="quantity-controls">
 
                       <button
+                        type="button"
                         onClick={() =>
                           decreaseQuantity(item.id)
                         }
@@ -163,6 +186,7 @@ function Checkoutpage() {
                       </span>
 
                       <button
+                        type="button"
                         onClick={() =>
                           increaseQuantity(item.id)
                         }
@@ -172,7 +196,8 @@ function Checkoutpage() {
 
                     </div>
 
-                    {/* Total */}
+
+                    {/* Item total */}
 
                     <div className="basket-item-total">
 
@@ -192,6 +217,9 @@ function Checkoutpage() {
 
             </div>
 
+
+            {/* Continue shopping */}
+
             <button
               className="continue-shopping"
               onClick={() => navigate("/")}
@@ -201,6 +229,7 @@ function Checkoutpage() {
 
           </section>
 
+
           {/* Order summary */}
 
           <aside className="order-summary">
@@ -209,7 +238,9 @@ function Checkoutpage() {
               Order Summary
             </h2>
 
+
             <div className="summary-row">
+
               <span>
                 Subtotal
               </span>
@@ -217,9 +248,12 @@ function Checkoutpage() {
               <strong>
                 ${subtotal.toFixed(2)}
               </strong>
+
             </div>
 
+
             <div className="summary-row">
+
               <span>
                 Delivery
               </span>
@@ -227,11 +261,15 @@ function Checkoutpage() {
               <strong>
                 ${delivery.toFixed(2)}
               </strong>
+
             </div>
+
 
             <div className="summary-divider"></div>
 
+
             <div className="summary-total">
+
               <span>
                 Total
               </span>
@@ -239,18 +277,32 @@ function Checkoutpage() {
               <strong>
                 ${total.toFixed(2)}
               </strong>
+
             </div>
 
-            <button className="checkout-button">
+
+            {/* Proceed to checkout */}
+
+            <button
+              className="checkout-button"
+              onClick={() =>
+                navigate("/checkout/details")
+              }
+            >
               Proceed to Checkout
             </button>
 
+
             <div className="secure-checkout">
-              <span>✓</span>
+
+              <span>
+                ✓
+              </span>
 
               <p>
                 Secure checkout
               </p>
+
             </div>
 
           </aside>
@@ -258,8 +310,9 @@ function Checkoutpage() {
         </div>
 
       </main>
+
     </div>
   );
 }
 
-export default Checkoutpage;
+export default Basketpage;

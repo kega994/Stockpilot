@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  getProducts,
-  deleteProduct,
-} from "../services/productService";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams} from "react-router-dom";
+import { getProducts, deleteProduct} from "../services/productService";
 import { getCategories } from "../services/categoryService";
 import { getBrands } from "../services/brandService";
 import "../styles/Products.css";
 
 function Products() {
+
+  const [searchParams] = useSearchParams();
+
+  const initialSearch = searchParams.get("search") || "";
+
   const [products, setProducts] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTerm, setSearchTerm] = useState(initialSearch);
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [categoryFilter, setCategoryFilter] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,6 +23,7 @@ function Products() {
   const [brands, setBrands] = useState([]);
   const [brandFilter, setBrandFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+
 
   const productsPerPage = 10;
 
