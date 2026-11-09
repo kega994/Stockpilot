@@ -189,8 +189,8 @@ StockPilot is a portfolio project demonstrating full-stack application developme
 
 ## Author
 
-**Your Name**
+Gergo Szima
 
-- GitHub: `YOUR_GITHUB_PROFILE_URL`
-- LinkedIn: `YOUR_LINKEDIN_URL`
-- Portfolio: `YOUR_PORTFOLIO_URL`
+- GitHub: https://github.com/kega994/Stockpilot
+- LinkedIn: https://www.linkedin.com/in/gergo-szima-0b3a12332/
+
