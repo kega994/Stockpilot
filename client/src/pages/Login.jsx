@@ -30,7 +30,7 @@ function Login() {
 
         localStorage.setItem("token", data.token);
 
-        navigate("/products");
+        navigate("/");
       } else {
         console.error("Login failed:", data);
       }
