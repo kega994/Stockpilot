@@ -4,14 +4,16 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Header.css";
 
 function Header() {
-  const { basket } = useContext(BasketContext);
+  const { basket, logoutBasket } = useContext(BasketContext);
 
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
 
+  const isLoggedIn = Boolean(localStorage.getItem("token"));
+
   const basketCount = basket.reduce(
-    (total, item) => total + item.basketQuantity,
+    (total, item) => total + Number(item.basketQuantity || 0),
     0
   );
 
@@ -24,8 +26,16 @@ function Header() {
       return;
     }
 
-  
-      navigate(`/?search=${encodeURIComponent(search)}`);
+    navigate(`/?search=${encodeURIComponent(search)}`);
+  };
+
+  const handleLogout = () => {
+    // Restore the guest basket before removing the login token
+    logoutBasket();
+
+    localStorage.removeItem("token");
+
+    navigate("/");
   };
 
   return (
@@ -54,9 +64,7 @@ function Header() {
             type="text"
             placeholder="Search for products, brands and categories..."
             value={searchTerm}
-            onChange={(e) =>
-              setSearchTerm(e.target.value)
-            }
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
 
           <button
@@ -98,36 +106,39 @@ function Header() {
 
         <div className="nav-inner">
 
-          <button
-            onClick={() => navigate("/")}
-          >
+          <button onClick={() => navigate("/")}>
             Home
           </button>
 
-          <button
-            onClick={() => navigate("/products")}
-          >
+          <button onClick={() => navigate("/products")}>
             Products
           </button>
 
-          <button
-            onClick={() => navigate("/checkout")}
-          >
+          <button onClick={() => navigate("/checkout")}>
             Basket
           </button>
 
-          <button
-            className="login-nav-button"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </button>
+          {isLoggedIn ? (
+            <button
+              className="login-nav-button"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          ) : (
+            <>
+              <button
+                className="login-nav-button"
+                onClick={() => navigate("/login")}
+              >
+                Login
+              </button>
 
-          <button
-            onClick={() => navigate("/signup")}
-          >
-            Sign Up
-          </button>
+              <button onClick={() => navigate("/signup")}>
+                Sign Up
+              </button>
+            </>
+          )}
 
         </div>
 

@@ -1,22 +1,22 @@
+const API_URL = "http://localhost:3000/api";
+
 const createOrder = async (orderData) => {
   try {
-    const response = await fetch(
-      "http://localhost:3000/api/orders",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(orderData)
-      }
-    );
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_URL}/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(orderData)
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        data.error || "Failed to place order"
-      );
+      throw new Error(data.error || "Failed to place order");
     }
 
     return data;
@@ -28,16 +28,18 @@ const createOrder = async (orderData) => {
 
 const getOrderById = async (id) => {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/orders/${id}`
-    );
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_URL}/orders/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error(
-        data.error || "Failed to fetch order"
-      );
+      throw new Error(data.error || "Failed to fetch order");
     }
 
     return data;
