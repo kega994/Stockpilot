@@ -4,41 +4,84 @@ const jwt = require("jsonwebtoken");
 
 
 const register = async (req, res) => {
-    // Implement registration logic here
+    const client = await pool.connect();
 
-    try{
-    const {email, password} = req.body;
-    if (!email || !password) {
-        return res.status(400).json({ error: "Email and password are required" });
+    try {
+        const email = typeof req.body.email === "string"
+            ? req.body.email.trim().toLowerCase()
+            : "";
+
+        const password = req.body.password;
+
+        if (!email || !password) {
+            return res.status(400).json({
+                error: "Email and password are required"
+            });
+        }
+
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(email) || email.length > 254) {
+            return res.status(400).json({
+                error: "Please provide a valid email address"
+            });
+        }
+
+        if (
+            typeof password !== "string" ||
+            password.length < 8 ||
+            password.length > 72
+        ) {
+            return res.status(400).json({
+                error: "Password must be between 8 and 72 characters"
+            });
+        }
+
+        await client.query("BEGIN");
+
+        const hashedPassword = await bcrypt.hash(password, 12);
+
+        // Create customer account
+        const userResult = await client.query(
+            `INSERT INTO users (email, password_hash, role)
+             VALUES ($1, $2, $3)
+             RETURNING id, email, role`,
+            [email, hashedPassword, "customer"]
+        );
+
+        const user = userResult.rows[0];
+
+        // Automatically create their empty basket
+        await client.query(
+            "INSERT INTO carts (user_id) VALUES ($1)",
+            [user.id]
+        );
+
+        await client.query("COMMIT");
+
+        return res.status(201).json({
+            message: "Account and basket created successfully",
+            user
+        });
+
+    } catch (error) {
+        await client.query("ROLLBACK");
+
+        if (error.code === "23505") {
+            return res.status(409).json({
+                error: "An account with this email already exists"
+            });
+        }
+
+        console.error("Registration error:", error);
+
+        return res.status(500).json({
+            error: "Unable to create account right now"
+        });
+
+    } finally {
+        client.release();
     }
-
-    const existinguser = await pool.query(
-    "SELECT * FROM users WHERE email = $1",
-    [email]
-);
-
-if (existinguser.rows.length > 0) {
-    return res.status(409).json({
-        error: "Email already exists"
-    });
-}
-
-
-const hashedPassword = await bcrypt.hash(password, 10);
-
-const result = await pool.query(
-    "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING *",
-    [email, hashedPassword]
-);
-res.status(201).json(
-  { message: "User registered successfully" }
-);
-
-
-} catch (error) {
-    console.error("Error during registration:", error);
-    res.status(500).json({ error: "Internal server error" });
-}
 };
 
 
