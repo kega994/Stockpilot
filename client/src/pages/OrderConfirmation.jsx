@@ -20,24 +20,13 @@ function OrderConfirmation() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      navigate("/login", {
-        replace: true,
-        state: {
-          from: location.pathname
-        }
-      });
-
+    if (location.state?.order) {
       return;
     }
 
-    // Fetch the order if it wasn't passed through navigation
     const fetchOrder = async () => {
       try {
         setLoading(true);
-        setError("");
 
         const data = await getOrderById(id);
 
@@ -53,10 +42,8 @@ function OrderConfirmation() {
       }
     };
 
-    if (!location.state?.order) {
-      fetchOrder();
-    }
-  }, [id, location.pathname, location.state?.order, navigate]);
+    fetchOrder();
+  }, [id, location.state]);
 
   if (loading) {
     return (

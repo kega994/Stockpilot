@@ -1,5 +1,5 @@
-import { useContext, useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import BasketContext from "../context/BasketContext";
 import Header from "../components/Header";
 import { createOrder } from "../services/orderService";
@@ -8,67 +8,21 @@ import "../styles/Checkout.css";
 function Checkout() {
   const {
     basket,
-    clearBasket,
-    loadCustomerBasket
+    setBasket
   } = useContext(BasketContext);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [basketLoading, setBasketLoading] = useState(true);
   const [customerName, setCustomerName] = useState("");
   const [email, setEmail] = useState("");
   const [addressLine1, setAddressLine1] = useState("");
   const [addressLine2, setAddressLine2] = useState("");
   const [city, setCity] = useState("");
   const [postcode, setPostcode] = useState("");
+
   const [error, setError] = useState("");
   const [placingOrder, setPlacingOrder] = useState(false);
 
-  // Require login and load the customer's saved database basket
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      navigate("/login", {
-        replace: true,
-        state: {
-          from: location.pathname
-        }
-      });
-
-      return;
-    }
-
-    const loadBasket = async () => {
-      try {
-        await loadCustomerBasket();
-      } catch (error) {
-        console.error("Unable to load checkout basket:", error);
-        setError(error.message || "Unable to load your basket.");
-
-        // If the login token is invalid, return to login
-        if (
-          error.message?.includes("401") ||
-          error.message?.includes("403") ||
-          error.message?.toLowerCase().includes("token")
-        ) {
-          localStorage.removeItem("token");
-
-          navigate("/login", {
-            replace: true,
-            state: {
-              from: location.pathname
-            }
-          });
-        }
-      } finally {
-        setBasketLoading(false);
-      }
-    };
-
-    loadBasket();
-  }, [navigate, location.pathname]);
 
   const subtotal = basket.reduce((total, item) => {
     return total + Number(item.price) * item.basketQuantity;
@@ -78,7 +32,7 @@ function Checkout() {
 
   const total = subtotal + delivery;
 
-  // Place the order using the customer's saved database basket
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
 
@@ -99,15 +53,20 @@ function Checkout() {
         address_line2: addressLine2,
         city,
         postcode,
-        delivery_method: "Standard Delivery"
+        delivery_method: "Standard Delivery",
+
+        items: basket.map((item) => ({
+          product_id: item.id,
+          quantity: item.basketQuantity
+        }))
       };
 
       const data = await createOrder(orderData);
 
-      // Clear/refresh the basket after a successful order
-      await clearBasket();
+      // Clear basket after successful order
+      setBasket([]);
 
-      // Navigate to order confirmation
+      // Go to confirmation page
       navigate(
         `/order-confirmation/${data.order.id}`,
         {
@@ -116,6 +75,7 @@ function Checkout() {
           }
         }
       );
+
     } catch (error) {
       console.error("Error placing order:", error);
 
@@ -123,31 +83,23 @@ function Checkout() {
         error.message ||
         "Something went wrong while placing your order."
       );
+
     } finally {
       setPlacingOrder(false);
     }
   };
 
-  // Show loading while the saved basket is retrieved
-  if (basketLoading) {
-    return (
-      <div className="checkout-page">
-        <Header />
-
-        <main className="checkout-empty">
-          <p>Loading your basket...</p>
-        </main>
-      </div>
-    );
-  }
 
   // If basket is empty
+
   if (basket.length === 0) {
     return (
       <div className="checkout-page">
+
         <Header />
 
         <main className="checkout-empty">
+
           <div className="checkout-empty-icon">
             🛒
           </div>
@@ -170,10 +122,13 @@ function Checkout() {
           >
             Continue Shopping
           </button>
+
         </main>
+
       </div>
     );
   }
+
 
   return (
     <div className="checkout-page">
@@ -200,6 +155,7 @@ function Checkout() {
 
         </div>
 
+
         {/* Error */}
 
         {error && (
@@ -208,12 +164,12 @@ function Checkout() {
           </div>
         )}
 
+
         <div className="checkout-layout">
 
           {/* Checkout form */}
 
           <form
-            id="checkout-form"
             className="checkout-form"
             onSubmit={handlePlaceOrder}
           >
@@ -233,6 +189,7 @@ function Checkout() {
                 </p>
 
               </div>
+
 
               <div className="checkout-form-grid">
 
@@ -254,6 +211,7 @@ function Checkout() {
                   />
 
                 </div>
+
 
                 <div className="checkout-form-group">
 
@@ -278,6 +236,7 @@ function Checkout() {
 
             </section>
 
+
             {/* Delivery address */}
 
             <section className="checkout-form-section">
@@ -293,6 +252,7 @@ function Checkout() {
                 </p>
 
               </div>
+
 
               <div className="checkout-form-grid">
 
@@ -315,6 +275,7 @@ function Checkout() {
 
                 </div>
 
+
                 <div className="checkout-form-group checkout-full-width">
 
                   <label htmlFor="addressLine2">
@@ -334,6 +295,7 @@ function Checkout() {
 
                 </div>
 
+
                 <div className="checkout-form-group">
 
                   <label htmlFor="city">
@@ -352,6 +314,7 @@ function Checkout() {
                   />
 
                 </div>
+
 
                 <div className="checkout-form-group">
 
@@ -376,6 +339,7 @@ function Checkout() {
 
             </section>
 
+
             {/* Navigation */}
 
             <button
@@ -388,6 +352,7 @@ function Checkout() {
 
           </form>
 
+
           {/* Order summary */}
 
           <aside className="checkout-order-summary">
@@ -395,6 +360,7 @@ function Checkout() {
             <h2>
               Order Summary
             </h2>
+
 
             <div className="checkout-summary-items">
 
@@ -420,6 +386,7 @@ function Checkout() {
 
                   </div>
 
+
                   <div className="checkout-summary-product">
 
                     <strong>
@@ -431,6 +398,7 @@ function Checkout() {
                     </span>
 
                   </div>
+
 
                   <strong className="checkout-summary-price">
                     $
@@ -446,6 +414,7 @@ function Checkout() {
 
             </div>
 
+
             <div className="checkout-summary-row">
 
               <span>
@@ -457,6 +426,7 @@ function Checkout() {
               </strong>
 
             </div>
+
 
             <div className="checkout-summary-row">
 
@@ -470,7 +440,9 @@ function Checkout() {
 
             </div>
 
+
             <div className="checkout-summary-divider"></div>
+
 
             <div className="checkout-summary-total">
 
@@ -484,16 +456,19 @@ function Checkout() {
 
             </div>
 
+
             <button
               type="submit"
               form="checkout-form"
               className="checkout-place-order-button"
               disabled={placingOrder}
+              onClick={handlePlaceOrder}
             >
               {placingOrder
                 ? "Placing Order..."
                 : "Place Order"}
             </button>
+
 
             <div className="checkout-secure">
 
