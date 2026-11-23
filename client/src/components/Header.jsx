@@ -123,13 +123,6 @@ function Header() {
             Login
           </button>
 
-          <button
-            className="signup-nav-button"
-            onClick={() => navigate("/signup")}
-            >
-              Signup
-            </button>
-
         </div>
 
       </nav>

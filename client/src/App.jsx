@@ -10,7 +10,6 @@ import BasketPage from "./pages/BasketPage";
 import Home from "./pages/Home";
 import Checkout from "./pages/Checkout";
 import OrderConfirmation from "./pages/OrderConfirmation";
-import SignUp from "./pages/SignUp";
 
 function App() {
   return (
@@ -59,12 +58,6 @@ function App() {
         path="/order-confirmation/:id"
         element={<OrderConfirmation />}
       />
-
-
-      <Route
-        path="/signup"
-        element={<SignUp/>}
-        />
 
     </Routes>
   );
