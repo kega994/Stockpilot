@@ -4,7 +4,7 @@ const getProducts = async () => {
   try {
     const token = localStorage.getItem("token");
 
-    const response = await fetch("http://localhost:3000/api/products", {
+    const response = await fetch("https://stockpilot-api-tn3t.onrender.com/api/products", {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -32,7 +32,7 @@ const deleteProduct = async (id) => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `http://localhost:3000/api/products/${id}`,
+        `https://stockpilot-api-tn3t.onrender.com/api/products/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -61,7 +61,7 @@ const deleteProduct = async (id) => {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      "http://localhost:3000/api/products",
+      "https://stockpilot-api-tn3t.onrender.com/api/products",
       {
         method: "POST",
         headers: {
@@ -89,7 +89,7 @@ const deleteProduct = async (id) => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch(`http://localhost:3000/api/products/${id}`, {
+      const response = await fetch(`https://stockpilot-api-tn3t.onrender.com/api/products/${id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -114,7 +114,7 @@ const updateProduct = async (id, product) => {
     const token = localStorage.getItem("token");
 
     const response = await fetch(
-      `http://localhost:3000/api/products/${id}`,
+      `https://stockpilot-api-tn3t.onrender.com/api/products/${id}`,
       {
         method: "PUT",
         headers: {

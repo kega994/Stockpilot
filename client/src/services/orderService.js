@@ -1,7 +1,7 @@
 const createOrder = async (orderData) => {
   try {
     const response = await fetch(
-      "http://localhost:3000/api/orders",
+      "https://stockpilot-api-tn3t.onrender.com/api/orders",
       {
         method: "POST",
         headers: {
@@ -29,7 +29,7 @@ const createOrder = async (orderData) => {
 const getOrderById = async (id) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/orders/${id}`
+      `https://stockpilot-api-tn3t.onrender.com/api/orders/${id}`
     );
 
     const data = await response.json();

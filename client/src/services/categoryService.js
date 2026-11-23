@@ -2,7 +2,7 @@ const getCategories = async () =>{
   try {
     const token = localStorage.getItem("token");
 
-    const response = await fetch("http://localhost:3000/api/categories", {
+    const response = await fetch("https://stockpilot-api-tn3t.onrender.com/api/categories", {
       headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,

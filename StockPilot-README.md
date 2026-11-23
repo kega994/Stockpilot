@@ -131,7 +131,7 @@ npm run dev
 
 Vite will print the local development URL in the terminal (commonly `http://localhost:5173`).
 
-The frontend API service is currently configured to call `http://localhost:3000/api`.
+The frontend API service is currently configured to call `https://stockpilot-api-tn3t.onrender.com/api`.
 
 ## Automated testing
 
