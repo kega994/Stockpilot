@@ -5,7 +5,6 @@ import "../styles/Header.css";
 
 function Header() {
   const { basket } = useContext(BasketContext);
-
   const navigate = useNavigate();
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -24,19 +23,14 @@ function Header() {
       return;
     }
 
-  
-      navigate(`/?search=${encodeURIComponent(search)}`);
+    navigate(`/?search=${encodeURIComponent(search)}`);
   };
 
   return (
     <header className="site-header">
-
       {/* Main header */}
-
       <div className="header-inner">
-
         {/* Logo */}
-
         <div
           className="logo"
           onClick={() => navigate("/")}
@@ -45,7 +39,6 @@ function Header() {
         </div>
 
         {/* Search */}
-
         <form
           className="search-container"
           onSubmit={handleSearch}
@@ -54,9 +47,7 @@ function Header() {
             type="text"
             placeholder="Search for products, brands and categories..."
             value={searchTerm}
-            onChange={(e) =>
-              setSearchTerm(e.target.value)
-            }
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
 
           <button
@@ -68,16 +59,12 @@ function Header() {
         </form>
 
         {/* Basket */}
-
         <div className="header-actions">
-
           <button
             className="basket-button"
             onClick={() => navigate("/checkout")}
           >
-            <span className="basket-icon">
-              🛒
-            </span>
+            <span className="basket-icon">🛒</span>
 
             <span className="basket-text">
               Basket
@@ -87,32 +74,21 @@ function Header() {
               {basketCount}
             </span>
           </button>
-
         </div>
-
       </div>
 
       {/* Navigation */}
-
       <nav className="main-nav">
-
         <div className="nav-inner">
-
-          <button
-            onClick={() => navigate("/")}
-          >
+          <button onClick={() => navigate("/")}>
             Home
           </button>
 
-          <button
-            onClick={() => navigate("/products")}
-          >
+          <button onClick={() => navigate("/products")}>
             Products
           </button>
 
-          <button
-            onClick={() => navigate("/checkout")}
-          >
+          <button onClick={() => navigate("/checkout")}>
             Basket
           </button>
 
@@ -123,10 +99,15 @@ function Header() {
             Login
           </button>
 
+          {/* Sign Up button */}
+          <button
+            className="signup-nav-button"
+            onClick={() => navigate("/signup")}
+          >
+            Sign Up
+          </button>
         </div>
-
       </nav>
-
     </header>
   );
 }
