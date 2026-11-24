@@ -85,7 +85,7 @@ function Header() {
           </button>
 
           <button onClick={() => navigate("/products")}>
-            Products
+            Manage Products(admin)
           </button>
 
           <button onClick={() => navigate("/checkout")}>
