@@ -274,3 +274,19 @@
 .login-nav-button:hover {
   background: #1d4ed8 !important;
 }
+
+/* Sign Up button */
+
+.signup-nav-button {
+  margin-left: 8px;
+
+  background: #3b82f6 !important;
+  color: white !important;
+
+  border-radius: 6px;
+}
+
+.signup-nav-button:hover {
+  background: #1d4ed8 !important;
+  color: white !important;
+}
